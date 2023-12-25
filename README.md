@@ -2,6 +2,13 @@
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
+## Tech
+
+- SvelteKit
+- Drizzle ORM
+- PostgreSQL
+- Tailwind CSS
+
 ## Creating a project
 
 If you're seeing this, you've probably already done this step. Congrats!
@@ -23,6 +30,25 @@ npm run dev
 
 # or start the server and open the app in a new browser tab
 npm run dev -- --open
+```
+
+## Drizzle
+
+```bash
+# open drizzle studio
+pnpm drizzle-kit studio
+
+# generate migration
+pnpm drizzle-kit generate:pg
+
+# drop migration
+pnpm drizzle-kit drop
+
+# apply migrations
+pnpm tsx ./scripts/migrate.ts
+
+# push schema for rapid prototyping
+pnpm drizzle-kit push:pg
 ```
 
 ## Building
