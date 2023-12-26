@@ -4,8 +4,6 @@ import { drizzle } from 'drizzle-orm/neon-http';
 
 neonConfig.fetchConnectionCache = true;
 
-console.log(DATABASE_URL);
-
 export const connect = () => {
 	const sql = neon(DATABASE_URL);
 	const db = drizzle(sql);
