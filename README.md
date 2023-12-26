@@ -8,6 +8,7 @@ Everything you need to build a Svelte project, powered by [`create-svelte`](http
 - Drizzle ORM
 - PostgreSQL
 - Tailwind CSS
+- Lucia
 
 ## Creating a project
 
@@ -41,6 +42,9 @@ pnpm drizzle-kit studio
 # generate migration
 pnpm drizzle-kit generate:pg
 
+# generate empty migration
+drizzle-kit generate:pg --custom
+
 # drop migration
 pnpm drizzle-kit drop
 
@@ -62,3 +66,8 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+## References
+
+- [Lucia V3 Docs](https://github.com/lucia-auth/lucia/tree/v3/docs)
+- [Drizzle Custom Types](https://github.com/drizzle-team/drizzle-orm/blob/main/docs/custom-types.lite.md)

@@ -1,11 +1,14 @@
 import { DATABASE_URL } from '$env/static/private';
-import { Pool } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 
-const connect = () => {
-	const pool = new Pool({ connectionString: DATABASE_URL });
-	const db = drizzle(pool);
-	return db;
+neonConfig.fetchConnectionCache = true;
+
+console.log(DATABASE_URL);
+
+export const connect = () => {
+	const sql = neon(DATABASE_URL);
+	const db = drizzle(sql);
+
+	return { db };
 };
-
-export { connect };
