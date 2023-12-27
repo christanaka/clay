@@ -2,7 +2,8 @@ import { dev } from '$app/environment';
 import { sessions } from '$lib/db/sessions';
 import { users } from '$lib/db/users';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { Lucia } from 'lucia';
+import { Lucia, TimeSpan, generateId } from 'lucia';
+import { createDate } from 'oslo';
 import { alphabet, generateRandomString } from 'oslo/random';
 import { connect } from './db';
 
@@ -38,4 +39,16 @@ declare module 'lucia' {
 	}
 }
 
-export const generateEmailVerificationCode = () => generateRandomString(8, alphabet('0-9', 'A-Z'));
+export const generateEmailVerificationCode = () => {
+	return {
+		code: generateRandomString(8, alphabet('0-9', 'A-Z')),
+		codeExpiresAt: createDate(new TimeSpan(5, 'm'))
+	};
+};
+
+export const generateEmailVerificationToken = () => {
+	return {
+		token: generateId(40),
+		tokenExpiresAt: createDate(new TimeSpan(2, 'h'))
+	};
+};

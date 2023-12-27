@@ -1,11 +1,14 @@
 import { dev } from '$app/environment';
-import { emailVerificationCodes } from '$lib/db/email-verification-codes';
+import { emailVerifications } from '$lib/db/email-verification';
 import { users } from '$lib/db/users';
-import { generateEmailVerificationCode, lucia } from '$lib/server/auth';
+import {
+	generateEmailVerificationCode,
+	generateEmailVerificationToken,
+	lucia
+} from '$lib/server/auth';
 import { connect } from '$lib/server/db';
 import { fail, redirect } from '@sveltejs/kit';
 import { generateId } from 'lucia';
-import { TimeSpan, createDate } from 'oslo';
 import { Argon2id } from 'oslo/password';
 import { signupSchema } from './schemas';
 
@@ -16,7 +19,7 @@ export const load = async ({ locals }) => {
 };
 
 export const actions = {
-	default: async ({ cookies, request }) => {
+	default: async ({ cookies, request, url }) => {
 		const formData = await request.formData();
 		const formFields = Object.fromEntries(formData);
 
@@ -46,12 +49,15 @@ export const actions = {
 			.onConflictDoNothing({ target: users.email });
 
 		if (userInsertCount) {
-			const code = generateEmailVerificationCode();
-			await db.insert(emailVerificationCodes).values({
+			const { code, codeExpiresAt } = generateEmailVerificationCode();
+			const { token, tokenExpiresAt } = generateEmailVerificationToken();
+			await db.insert(emailVerifications).values({
 				userId: userId,
 				email,
 				code,
-				expiresAt: createDate(new TimeSpan(5, 'm'))
+				codeExpiresAt,
+				token,
+				tokenExpiresAt
 			});
 
 			const session = await lucia.createSession(userId, {});
@@ -72,11 +78,20 @@ export const actions = {
 					code,
 					'\x1b[0m'
 				);
+				console.log(
+					'\x1b[32m',
+					' \u279c',
+					'\x1b[0m\x1b[1m',
+					'Verification Url:',
+					'\x1b[36m',
+					`${url.protocol}//${url.host}/verifyemail/${token}`,
+					'\x1b[0m'
+				);
 			}
 
 			// TODO: Send email
 		}
 
-		redirect(302, '/verify');
+		redirect(302, '/verifyemail');
 	}
 };

@@ -13,7 +13,7 @@
 
 	{#if !user.isEmailVerified}
 		<p>Please verify your email.</p>
-		<a href="/verify">Verify</a>
+		<a href="/verifyemail">Verify</a>
 	{/if}
 
 	<form action="/logout" method="post" use:enhance>

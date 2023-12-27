@@ -1,7 +1,7 @@
-import { emailVerificationCodes } from '$lib/db/email-verification-codes';
+import { emailVerifications } from '$lib/db/email-verification';
 import { createInsertSchema } from 'drizzle-zod';
 
-export const verifySchema = createInsertSchema(emailVerificationCodes, {
+export const verifyEmailSchema = createInsertSchema(emailVerifications, {
 	code: (schema) => schema.code.min(1, { message: 'Required' }).max(50)
 }).pick({
 	code: true

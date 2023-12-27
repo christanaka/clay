@@ -3,8 +3,18 @@ import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 export const signupSchema = createInsertSchema(users, {
-	firstName: (schema) => schema.firstName.trim().min(1, { message: 'Required' }).max(50),
-	lastName: (schema) => schema.lastName.trim().min(1, { message: 'Required' }).max(50),
+	firstName: (schema) =>
+		schema.firstName
+			.trim()
+			.min(1, { message: 'Required' })
+			.max(50)
+			.regex(/^[a-zA-Z]+$/, { message: 'Invalid' }),
+	lastName: (schema) =>
+		schema.lastName
+			.trim()
+			.min(1, { message: 'Required' })
+			.max(50)
+			.regex(/^[a-zA-Z]+$/, { message: 'Invalid' }),
 	email: z.string().trim().min(1, { message: 'Required' }).email().max(320)
 })
 	.pick({

@@ -1,11 +1,11 @@
-import { emailVerificationCodes } from '$lib/db/email-verification-codes';
+import { emailVerifications } from '$lib/db/email-verification';
 import { users } from '$lib/db/users';
 import { lucia } from '$lib/server/auth';
 import { connect } from '$lib/server/db';
 import { fail, redirect } from '@sveltejs/kit';
 import { and, eq, sql } from 'drizzle-orm';
 import { isWithinExpirationDate } from 'oslo';
-import { verifySchema } from './schemas';
+import { verifyEmailSchema } from './schemas';
 
 export const actions = {
 	default: async ({ cookies, locals, request }) => {
@@ -16,7 +16,7 @@ export const actions = {
 		const formData = await request.formData();
 		const formFields = Object.fromEntries(formData);
 
-		const validatedFields = verifySchema.safeParse(formFields);
+		const validatedFields = verifyEmailSchema.safeParse(formFields);
 		if (!validatedFields.success) {
 			return fail(400, {
 				data: formFields,
@@ -28,21 +28,21 @@ export const actions = {
 
 		const { db } = connect();
 
-		const [emailVerificationCode] = await db
-			.delete(emailVerificationCodes)
+		const [emailVerification] = await db
+			.delete(emailVerifications)
 			.where(
 				and(
-					eq(emailVerificationCodes.userId, locals.user.id),
-					eq(emailVerificationCodes.email, locals.user.email),
-					eq(emailVerificationCodes.code, code)
+					eq(emailVerifications.userId, locals.user.id),
+					eq(emailVerifications.email, locals.user.email),
+					eq(emailVerifications.code, code)
 				)
 			)
 			.returning({
-				expiresAt: emailVerificationCodes.expiresAt,
-				email: emailVerificationCodes.email
+				codeExpiresAt: emailVerifications.codeExpiresAt,
+				email: emailVerifications.email
 			});
 
-		if (!emailVerificationCode || !isWithinExpirationDate(emailVerificationCode.expiresAt)) {
+		if (!emailVerification || !isWithinExpirationDate(emailVerification.codeExpiresAt)) {
 			return fail(400, {
 				data: formFields,
 				errors: { code: ['Code is invalid or has expired'] }
