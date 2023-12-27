@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { ActionData } from './$types';
 
-	const { form } = $props<{ form: ActionData }>();
+	const { form } = $props();
 </script>
 
 <form method="post" use:enhance>
@@ -45,4 +44,5 @@
 	{/if}
 
 	<button>Sign up</button>
+	<a href="/login">Login</a>
 </form>

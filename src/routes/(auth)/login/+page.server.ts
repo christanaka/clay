@@ -4,10 +4,9 @@ import { connect } from '$lib/server/db';
 import { fail, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { Argon2id } from 'oslo/password';
-import type { Actions, PageServerLoad } from './$types';
-import { loginSchema } from './schemas';
+import { loginSchema, type LoginSchemaFieldErrors } from './schemas';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load = async ({ locals }) => {
 	if (locals.user) {
 		redirect(302, '/');
 	}
@@ -33,10 +32,7 @@ export const actions = {
 		const [user] = await db
 			.select({
 				id: users.id,
-				email: users.email,
-				hashedPassword: users.hashedPassword,
-				firstName: users.firstName,
-				lastName: users.lastName
+				hashedPassword: users.hashedPassword
 			})
 			.from(users)
 			.where(eq(users.email, email))
@@ -46,9 +42,8 @@ export const actions = {
 			return fail(400, {
 				data: formFields,
 				errors: {
-					email: ['Invalid email and/or password'],
-					password: undefined
-				}
+					email: ['Invalid email and/or password']
+				} as LoginSchemaFieldErrors
 			});
 		}
 
@@ -57,17 +52,12 @@ export const actions = {
 			return fail(400, {
 				data: formFields,
 				errors: {
-					email: ['Invalid email and/or password'],
-					password: undefined
-				}
+					email: ['Invalid email and/or password']
+				} as LoginSchemaFieldErrors
 			});
 		}
 
-		const session = await lucia.createSession(user.id, {
-			email: user.email,
-			firstName: user.firstName,
-			lastName: user.lastName
-		});
+		const session = await lucia.createSession(user.id, {});
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		cookies.set(sessionCookie.name, sessionCookie.value, {
 			path: '.',
@@ -76,4 +66,4 @@ export const actions = {
 
 		redirect(302, '/');
 	}
-} satisfies Actions;
+};

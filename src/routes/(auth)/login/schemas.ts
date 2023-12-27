@@ -9,3 +9,5 @@ export const loginSchema = createSelectSchema(users, {
 	.extend({
 		password: z.string().min(1, { message: 'Required' }).max(255)
 	});
+
+export type LoginSchemaFieldErrors = z.inferFlattenedErrors<typeof loginSchema>['fieldErrors'];

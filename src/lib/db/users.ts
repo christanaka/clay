@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
-import { citext } from './extensions/citext';
+import { citext } from './extensions';
 
 export const users = pgTable('users', {
 	id: text('id').primaryKey(),
@@ -8,7 +8,7 @@ export const users = pgTable('users', {
 	firstName: text('first_name').notNull(),
 	lastName: text('last_name').notNull(),
 	hashedPassword: text('hashed_password').notNull(),
-	emailVerified: boolean('email_verified').notNull().default(false),
+	isEmailVerified: boolean('is_email_verified').notNull().default(false),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
 		.notNull()
 		.default(sql`(NOW() AT TIME ZONE 'utc'::text)`),
