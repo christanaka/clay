@@ -1,4 +1,4 @@
-import { emailVerifications } from '$lib/db/email-verification';
+import { emailVerifications } from '$lib/db/email-verifications';
 import { users } from '$lib/db/users';
 import { lucia } from '$lib/server/auth';
 import { connect } from '$lib/server/db';

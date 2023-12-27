@@ -1,4 +1,4 @@
-import { emailVerifications } from '$lib/db/email-verification';
+import { emailVerifications } from '$lib/db/email-verifications';
 import { createInsertSchema } from 'drizzle-zod';
 
 export const verifyEmailSchema = createInsertSchema(emailVerifications, {

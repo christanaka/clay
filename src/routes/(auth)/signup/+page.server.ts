@@ -1,5 +1,5 @@
 import { dev } from '$app/environment';
-import { emailVerifications } from '$lib/db/email-verification';
+import { emailVerifications } from '$lib/db/email-verifications';
 import { users } from '$lib/db/users';
 import {
 	generateEmailVerificationCode,
