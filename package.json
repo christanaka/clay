@@ -12,7 +12,12 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:integration": "playwright test",
-		"test:unit": "vitest"
+		"test:unit": "vitest",
+		"db:generate": "drizzle-kit generate:pg",
+		"db:drop": "drizzle-kit drop",
+		"db:migrate": "tsx ./scripts/migrate.ts",
+		"db:studio": "drizzle-kit studio",
+		"db:push": "drizzle-kit push:pg"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",

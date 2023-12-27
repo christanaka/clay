@@ -14,6 +14,37 @@ Everything you need to build a Svelte project, powered by [`create-svelte`](http
 
 - Neon (PostgreSQL)
 
+## Commands
+
+### Dev Commands
+
+```bash
+# run/start project
+pnpm dev
+```
+
+### Database Commands
+
+```bash
+# generate migration
+pnpm db:generate
+
+# generate empty migration
+pnpm db:generate --custom
+
+# drop migration
+pnpm db:drop
+
+# apply migrations
+pnpm db:migrate
+
+# open drizzle studio
+pnpm db:studio
+
+# push schema for rapid prototyping
+pnpm db:push
+```
+
 ## Creating a project
 
 If you're seeing this, you've probably already done this step. Congrats!
@@ -35,28 +66,6 @@ npm run dev
 
 # or start the server and open the app in a new browser tab
 npm run dev -- --open
-```
-
-## Drizzle
-
-```bash
-# open drizzle studio
-pnpm drizzle-kit studio
-
-# generate migration
-pnpm drizzle-kit generate:pg
-
-# generate empty migration
-drizzle-kit generate:pg --custom
-
-# drop migration
-pnpm drizzle-kit drop
-
-# apply migrations
-pnpm tsx ./scripts/migrate.ts
-
-# push schema for rapid prototyping
-pnpm drizzle-kit push:pg
 ```
 
 ## Building
