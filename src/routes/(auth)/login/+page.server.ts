@@ -1,9 +1,8 @@
 import { users } from '$lib/db/users';
-import { lucia } from '$lib/server/auth';
+import { lucia, verifyPassword } from '$lib/server/auth';
 import { connect } from '$lib/server/db';
 import { fail, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
-import { Argon2id } from 'oslo/password';
 import { loginSchema, type LoginSchemaFieldErrors } from './schemas';
 
 export const load = async ({ locals }) => {
@@ -35,8 +34,7 @@ export const actions = {
 				hashedPassword: users.hashedPassword
 			})
 			.from(users)
-			.where(eq(users.email, email))
-			.limit(1);
+			.where(eq(users.email, email));
 
 		if (!user) {
 			return fail(400, {
@@ -47,7 +45,7 @@ export const actions = {
 			});
 		}
 
-		const isValidPassword = await new Argon2id().verify(user.hashedPassword, password);
+		const isValidPassword = await verifyPassword(user.hashedPassword, password);
 		if (!isValidPassword) {
 			return fail(400, {
 				data: formFields,

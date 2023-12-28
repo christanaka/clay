@@ -4,6 +4,7 @@ import { users } from '$lib/db/users';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { Lucia, TimeSpan, generateId } from 'lucia';
 import { createDate } from 'oslo';
+import { Argon2id } from 'oslo/password';
 import { alphabet, generateRandomString } from 'oslo/random';
 import { connect } from './db';
 
@@ -39,6 +40,11 @@ declare module 'lucia' {
 	}
 }
 
+export const hashPassword = async (password: string) => new Argon2id().hash(password);
+
+export const verifyPassword = async (hashedPassword: string, password: string) =>
+	new Argon2id().verify(hashedPassword, password);
+
 export const generateEmailVerificationCode = () => {
 	return {
 		code: generateRandomString(8, alphabet('0-9', 'A-Z')),
@@ -47,6 +53,13 @@ export const generateEmailVerificationCode = () => {
 };
 
 export const generateEmailVerificationToken = () => {
+	return {
+		token: generateId(40),
+		tokenExpiresAt: createDate(new TimeSpan(2, 'h'))
+	};
+};
+
+export const generatePasswordResetToken = () => {
 	return {
 		token: generateId(40),
 		tokenExpiresAt: createDate(new TimeSpan(2, 'h'))

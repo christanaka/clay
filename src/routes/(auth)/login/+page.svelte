@@ -18,5 +18,6 @@
 	{/if}
 
 	<button>Log in</button>
+	<a href="/forgot-password">Forgot password?</a>
 	<a href="/signup">Sign up</a>
 </form>

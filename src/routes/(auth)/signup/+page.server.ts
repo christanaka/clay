@@ -4,12 +4,13 @@ import { users } from '$lib/db/users';
 import {
 	generateEmailVerificationCode,
 	generateEmailVerificationToken,
+	hashPassword,
 	lucia
 } from '$lib/server/auth';
 import { connect } from '$lib/server/db';
+import { logger } from '$lib/server/logger';
 import { fail, redirect } from '@sveltejs/kit';
 import { generateId } from 'lucia';
-import { Argon2id } from 'oslo/password';
 import { signupSchema } from './schemas';
 
 export const load = async ({ locals }) => {
@@ -33,7 +34,7 @@ export const actions = {
 
 		const { firstName, lastName, email, password } = validatedFields.data;
 		const userId = generateId(15);
-		const hashedPassword = await new Argon2id().hash(password);
+		const hashedPassword = await hashPassword(password);
 
 		const { db } = connect();
 
@@ -48,50 +49,38 @@ export const actions = {
 			})
 			.onConflictDoNothing({ target: users.email });
 
-		if (userInsertCount) {
-			const { code, codeExpiresAt } = generateEmailVerificationCode();
-			const { token, tokenExpiresAt } = generateEmailVerificationToken();
-			await db.insert(emailVerifications).values({
-				userId: userId,
-				email,
-				code,
-				codeExpiresAt,
-				token,
-				tokenExpiresAt
-			});
-
-			const session = await lucia.createSession(userId, {});
-			const sessionCookie = await lucia.createSessionCookie(session.id);
-			cookies.set(sessionCookie.name, sessionCookie.value, {
-				path: '.',
-				...sessionCookie.attributes
-			});
-
-			if (dev) {
-				console.log('\x1b[32m', ' \u279c', '\x1b[0m\x1b[1m', 'Email:', '\x1b[2m', email, '\x1b[0m');
-				console.log(
-					'\x1b[32m',
-					' \u279c',
-					'\x1b[0m\x1b[1m',
-					'Verification Code:',
-					'\x1b[36m',
-					code,
-					'\x1b[0m'
-				);
-				console.log(
-					'\x1b[32m',
-					' \u279c',
-					'\x1b[0m\x1b[1m',
-					'Verification Url:',
-					'\x1b[36m',
-					`${url.protocol}//${url.host}/verifyemail/${token}`,
-					'\x1b[0m'
-				);
-			}
-
-			// TODO: Send email
+		if (!userInsertCount) {
+			redirect(302, '/verify-email');
 		}
 
-		redirect(302, '/verifyemail');
+		const { code, codeExpiresAt } = generateEmailVerificationCode();
+		const { token, tokenExpiresAt } = generateEmailVerificationToken();
+		await db.insert(emailVerifications).values({
+			userId: userId,
+			email,
+			code,
+			codeExpiresAt,
+			token,
+			tokenExpiresAt
+		});
+
+		const session = await lucia.createSession(userId, {});
+		const sessionCookie = await lucia.createSessionCookie(session.id);
+		cookies.set(sessionCookie.name, sessionCookie.value, {
+			path: '.',
+			...sessionCookie.attributes
+		});
+
+		const verifyEmailUrl = `${url.protocol}//${url.host}/verify-email/${token}`;
+
+		if (dev) {
+			logger.debug('Email', email);
+			logger.debug('Verification Code', code);
+			logger.debug('Verification Link', verifyEmailUrl);
+		}
+
+		// TODO: Send email
+
+		redirect(302, '/verify-email');
 	}
 };
