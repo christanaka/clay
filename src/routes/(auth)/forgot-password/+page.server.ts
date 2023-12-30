@@ -2,7 +2,7 @@ import { dev } from '$app/environment';
 import { passwordResets } from '$lib/db/password-resets';
 import { users } from '$lib/db/users';
 import { generatePasswordResetToken } from '$lib/server/auth';
-import { connect } from '$lib/server/db';
+import { createDbClient } from '$lib/server/db';
 import { logger } from '$lib/server/logger';
 import { fail } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
@@ -23,7 +23,7 @@ export const actions = {
 
 		const { email } = validatedFields.data;
 
-		const { db } = connect();
+		const { db } = createDbClient();
 
 		const [user] = await db
 			.select({ id: users.id })

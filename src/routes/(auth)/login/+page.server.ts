@@ -1,6 +1,6 @@
 import { users } from '$lib/db/users';
 import { lucia, verifyPassword } from '$lib/server/auth';
-import { connect } from '$lib/server/db';
+import { createDbClient } from '$lib/server/db';
 import { fail, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { loginSchema, type LoginSchemaFieldErrors } from './schemas';
@@ -26,7 +26,7 @@ export const actions = {
 
 		const { email, password } = validatedFields.data;
 
-		const { db } = connect();
+		const { db } = createDbClient();
 
 		const [user] = await db
 			.select({

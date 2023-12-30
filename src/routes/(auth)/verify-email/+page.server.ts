@@ -1,7 +1,7 @@
 import { emailVerifications } from '$lib/db/email-verifications';
 import { users } from '$lib/db/users';
 import { lucia } from '$lib/server/auth';
-import { connect } from '$lib/server/db';
+import { createDbClient } from '$lib/server/db';
 import { fail, redirect } from '@sveltejs/kit';
 import { and, eq, sql } from 'drizzle-orm';
 import { isWithinExpirationDate } from 'oslo';
@@ -26,7 +26,7 @@ export const actions = {
 
 		const { code } = validatedFields.data;
 
-		const { db } = connect();
+		const { db } = createDbClient();
 
 		const [emailVerification] = await db
 			.delete(emailVerifications)

@@ -6,9 +6,9 @@ import { Lucia, TimeSpan, generateId } from 'lucia';
 import { createDate } from 'oslo';
 import { Argon2id } from 'oslo/password';
 import { alphabet, generateRandomString } from 'oslo/random';
-import { connect } from './db';
+import { createDbClient } from './db';
 
-const { db } = connect();
+const { db } = createDbClient();
 
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 

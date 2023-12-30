@@ -7,7 +7,7 @@ import {
 	hashPassword,
 	lucia
 } from '$lib/server/auth';
-import { connect } from '$lib/server/db';
+import { createDbClient } from '$lib/server/db';
 import { logger } from '$lib/server/logger';
 import { fail, redirect } from '@sveltejs/kit';
 import { generateId } from 'lucia';
@@ -36,7 +36,7 @@ export const actions = {
 		const userId = generateId(15);
 		const hashedPassword = await hashPassword(password);
 
-		const { db } = connect();
+		const { db } = createDbClient();
 
 		const { rowCount: userInsertCount } = await db
 			.insert(users)

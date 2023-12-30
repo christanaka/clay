@@ -1,7 +1,7 @@
 import { passwordResets } from '$lib/db/password-resets';
 import { users } from '$lib/db/users';
 import { hashPassword, lucia } from '$lib/server/auth';
-import { connect } from '$lib/server/db';
+import { createDbClient } from '$lib/server/db';
 import { fail, redirect } from '@sveltejs/kit';
 import { eq, sql } from 'drizzle-orm';
 import { isWithinExpirationDate } from 'oslo';
@@ -22,7 +22,7 @@ export const actions = {
 
 		const { newPassword } = validatedFields.data;
 
-		const { db } = connect();
+		const { db } = createDbClient();
 
 		const [passwordReset] = await db
 			.delete(passwordResets)
